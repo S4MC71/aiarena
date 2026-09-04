@@ -13,7 +13,7 @@ import { ShieldCheck } from 'lucide-react';
 const DEFAULT_CONFIG: RAGConfig = {
   mockMode: false,
   backendUrl: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:8000',
-  model: 'qwen2.5:14b',
+  model: 'qwen2.5:7b',
   topK: 4,
   similarityThreshold: 0.50,
   systemPrompt: 'You are the official AI Assistant for Arena Web Security students. You assist students with course modules, class schedules, lab VPN setup, and ethical hacking concepts with safe, educational guidance.',
@@ -78,7 +78,7 @@ export const App: React.FC = () => {
           ...DEFAULT_CONFIG,
           ...parsed,
           mockMode: false,
-          model: 'qwen2.5:14b',
+          model: 'qwen2.5:7b',
           backendUrl: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:8000'
         };
       } catch (e) {
