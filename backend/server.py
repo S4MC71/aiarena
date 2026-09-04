@@ -19,7 +19,7 @@ from openai import AsyncOpenAI
 QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434/v1")
 COLLECTION_NAME = "arena_knowledge_base"
-DEFAULT_MODEL = "qwen2.5:7b"
+DEFAULT_MODEL = os.getenv("DEFAULT_MODEL", "qwen2.5:14b")
 
 app = FastAPI(title="Arena Web Security RAG Engine")
 
