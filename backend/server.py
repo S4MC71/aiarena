@@ -89,31 +89,44 @@ async def chat_endpoint(req: ChatRequest):
         ])
         
         system_instruction = (
-            "You are the official Arena Web Security AI mentor for students. "
-            "The following official course context was retrieved:\n\n"
+            "You are the official AI mentor for Arena Web Security students.\n"
+            "Official course context retrieved from our knowledge base:\n\n"
             f"{context_text}\n\n"
-            "Instructions:\n"
-            "- Answer the student's question accurately using this context.\n"
-            "- Organize the response neatly with clear headings, bullet points, or code snippets.\n"
-            "- Write in a friendly, professional tone matching the student's language (Bengali or English).\n"
-            "- DO NOT output raw chunk citations like [1] or [2] or bracket tags. Output pure, clean, polished text."
+            "Guidelines:\n"
+            "- Answer the student's question accurately and helpfully based on this context.\n"
+            "- Language handling: Understand Bengali, Banglish (e.g. 'kivabe korbo', 'amar question ache'), and English perfectly. Respond in natural, friendly Bengali (বাংলা) or Banglish if the user asks in Bengali/Banglish, or in English if the user asks in English.\n"
+            "- Keep the formatting clean, structured, and easy to read with bullet points or bold text.\n"
+            "- Never output raw bracket citations like [1] or [2]."
         )
     else:
-        # DATA NOT FOUND IN COURSE REPO -> GENERAL CYBERSECURITY FALLBACK
+        # DATA NOT FOUND IN COURSE REPO -> GENERAL CYBERSECURITY OR GREETINGS
         system_instruction = (
-            "You are the official Arena Web Security AI mentor for students. "
-            "This question is not covered in our official internal course documents or FAQ.\n"
-            "Instructions:\n"
-            "- Answer the student's question using your broad cybersecurity and ethical hacking knowledge.\n"
-            "- If the question is about specific course operations (e.g. fees, batch changes), advise the student to contact the Arena support desk.\n"
-            "- Organize the response clearly and concisely with clean formatting."
+            "You are the official AI mentor for Arena Web Security students.\n\n"
+            "Guidelines:\n"
+            "- Greetings: If the student says 'hello', 'hi', 'salam', 'kemon acho' or general pleasantries, warmly greet them back as Arena Web Security's AI mentor. Tell them you are ready to help with course modules, class schedules, lab VPN setup, or cybersecurity concepts.\n"
+            "- Language handling: Students frequently ask in Bengali, Banglish (Bengali written in English letters, e.g. 'kivabe korbo', 'ki obostha', 'help lagbe'), or English. You MUST understand all three fluently. Reply in friendly Bengali (বাংলা) or Banglish if they used Bengali/Banglish, or in English if they used English.\n"
+            "- Technical Questions: If the student asks about general cybersecurity, web security, ethical hacking, networking, Linux, or bug hunting, provide an accurate, educational explanation.\n"
+            "- Specific Operations: If they ask about private administrative matters (payment/refunds/batch shifts) not in your database, advise them to contact the Arena support desk.\n"
+            "- Keep your response neat, direct, and well-structured."
         )
 
     # 4. Stream response from VPS LLM
+    m_str = (req.model or "").lower()
+    if "14b" in m_str:
+        target_model = "qwen2.5:14b"
+    elif "7b" in m_str:
+        target_model = "qwen2.5:7b"
+    elif "llama" in m_str:
+        target_model = "llama3.1:8b"
+    elif "mistral" in m_str:
+        target_model = "mistral:7b"
+    else:
+        target_model = DEFAULT_MODEL
+
     async def response_stream():
         try:
             stream = await llm.chat.completions.create(
-                model=req.model.lower().replace(" ", ""),
+                model=target_model,
                 messages=[
                     {"role": "system", "content": system_instruction},
                     {"role": "user", "content": req.query}

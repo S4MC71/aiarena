@@ -80,10 +80,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 value={form.model}
                 onChange={(e) => setForm({ ...form, model: e.target.value })}
               >
-                <option value="Qwen 2.5 7B">Qwen 2.5 7B (Default)</option>
-                <option value="Llama 3.1 8B">Llama 3.1 8B</option>
-                <option value="Mistral 7B">Mistral 7B</option>
-                <option value="Custom Model">Custom VPS Model</option>
+                <option value="qwen2.5:14b">Qwen 2.5 14B (VPS Default)</option>
+                <option value="qwen2.5:7b">Qwen 2.5 7B</option>
+                <option value="llama3.1:8b">Llama 3.1 8B</option>
+                <option value="mistral:7b">Mistral 7B</option>
               </select>
             </div>
 

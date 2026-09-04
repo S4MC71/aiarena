@@ -11,11 +11,11 @@ import type { ChatSession, Message, DocumentItem, RAGConfig } from './types';
 import { ShieldCheck } from 'lucide-react';
 
 const DEFAULT_CONFIG: RAGConfig = {
-  mockMode: true,
-  backendUrl: 'http://localhost:8000',
-  model: 'Qwen 2.5 7B (Sec)',
+  mockMode: false,
+  backendUrl: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:8000',
+  model: 'qwen2.5:14b',
   topK: 4,
-  similarityThreshold: 0.65,
+  similarityThreshold: 0.50,
   systemPrompt: 'You are the official AI Assistant for Arena Web Security students. You assist students with course modules, class schedules, lab VPN setup, and ethical hacking concepts with safe, educational guidance.',
   temperature: 0.2
 };
@@ -71,7 +71,21 @@ ping -c 3 10.10.10.1
 export const App: React.FC = () => {
   const [config, setConfig] = useState<RAGConfig>(() => {
     const saved = localStorage.getItem('arena_rag_config');
-    return saved ? JSON.parse(saved) : DEFAULT_CONFIG;
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        return {
+          ...DEFAULT_CONFIG,
+          ...parsed,
+          mockMode: false,
+          model: 'qwen2.5:14b',
+          backendUrl: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:8000'
+        };
+      } catch (e) {
+        return DEFAULT_CONFIG;
+      }
+    }
+    return DEFAULT_CONFIG;
   });
 
   const [documents, setDocuments] = useState<DocumentItem[]>(() => {
